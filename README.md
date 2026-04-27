@@ -15,28 +15,28 @@ DocMind 是一个基于 RAG (Retrieval-Augmented Generation) 技术构建的企�
 
 ```mermaid
 graph TD
-    User([用户]) --> |提问/上传| Frontend[Streamlit 前端]
-    Frontend --> |POST /chat (SSE)| Backend[FastAPI 后端]
-    Frontend --> |POST /upload| Backend
+    User(["用户"]) --> |"提问/上传"| Frontend["Streamlit 前端"]
+    Frontend --> |"POST /chat (SSE)"| Backend["FastAPI 后端"]
+    Frontend --> |"POST /upload"| Backend
     
     subgraph "核心引擎 (Core)"
-        Backend --> Pipeline[数据处理流]
-        Backend --> RAG[问答控制链]
+        Backend --> Pipeline["数据处理流"]
+        Backend --> RAG["问答控制链"]
         
-        Pipeline --> |pdfplumber| Parser[文档解析器]
-        Parser --> Splitter[文本分块]
-        Splitter --> |Embedding| Chroma[(ChromaDB 向量库)]
-        Splitter --> |jieba 分词| BM25[(BM25 词频索引)]
+        Pipeline --> |"pdfplumber"| Parser["文档解析器"]
+        Parser --> Splitter["文本分块"]
+        Splitter --> |"Embedding"| Chroma[("ChromaDB 向量库")]
+        Splitter --> |"jieba 分词"| BM25[("BM25 词频索引")]
         
-        RAG --> |1. 重构提问| LLM_Condense[上下文压缩]
-        RAG --> |2. 双路召回| Retriever[HybridRetriever]
+        RAG --> |"1. 重构提问"| LLM_Condense["上下文压缩"]
+        RAG --> |"2. 双路召回"| Retriever["HybridRetriever"]
         Retriever --> Chroma
         Retriever --> BM25
-        Retriever --> |3. RRF 融合| Reranker[BGE Reranker 精排]
-        Reranker --> |4. Prompt 组装| LLM_Answer[Gemini 2.5 Flash]
+        Retriever --> |"3. RRF 融合"| Reranker["BGE Reranker 精排"]
+        Reranker --> |"4. Prompt 组装"| LLM_Answer["Gemini 2.5 Flash"]
     end
     
-    LLM_Answer -.-> |流式文字| Frontend
+    LLM_Answer -.-> |"流式文字"| Frontend
 ```
 
 ## 🚀 快速启动
