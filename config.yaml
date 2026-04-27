@@ -1,0 +1,73 @@
+# ============================================================
+# DocMind 全局配置文件
+# 所有核心参数集中管理，修改配置无需改代码
+# ============================================================
+
+# Embedding 模型配置
+embedding:
+  model_name: "BAAI/bge-small-zh-v1.5"   # 开发环境轻量模型
+  # model_name: "BAAI/bge-m3"            # 生产环境 SOTA 模型
+  device: "cpu"                           # cpu / cuda
+  encode_kwargs:
+    normalize_embeddings: true
+
+# Reranker 重排模型配置
+reranker:
+  enabled: true
+  model_name: "BAAI/bge-reranker-v2-m3"  # BAAI 精排模型
+  max_length: 512
+
+# LLM 大语言模型配置
+llm:
+  base_url: "https://generativelanguage.googleapis.com/v1beta/openai/"
+  model_name: "gemini-2.5-flash"
+  temperature: 0.1
+  max_tokens: 2048
+  # api_key 通过环境变量 DOCMIND_API_KEY 或前端输入传入，不写入配置文件
+  # 使用 Google AI Studio 的 API Key: https://aistudio.google.com/apikey
+
+# 文本切分配置
+splitter:
+  chunk_size: 1200
+  chunk_overlap: 150
+  separators:
+    - "\n\n"
+    - "\n"
+    - "。"
+    - "！"
+    - "？"
+    - "；"
+    - " "
+    - ""
+
+# 检索配置
+retriever:
+  top_k: 3                  # 最终返回给 LLM 的 chunk 数量
+  search_type: "similarity"  # similarity / mmr
+
+# 数据存储路径（相对于项目根目录）
+paths:
+  uploads: "data/uploads"
+  chroma_db: "data/chroma_db"
+  bm25_index: "data/bm25_index"
+  logs: "logs"
+
+# 日志配置
+logging:
+  level: "INFO"              # DEBUG / INFO / WARNING / ERROR
+  rotation: "10 MB"          # 日志文件轮转大小
+  retention: "7 days"        # 日志保留时间
+
+# Prompt 模板
+prompt:
+  system: |
+    你是一个专业的智能知识库助手。
+    请严格根据以下检索到的<参考资料>来回答用户的问题。
+    回答要求：
+    1. 如果参考资料中有相关内容，请准确引用并组织回答。
+    2. **如果参考资料中包含表格数据（如 [表格数据]: 后面的内容），请务必在回答中也使用 Markdown 表格的格式进行输出，不要将表格转为普通段落文本。**
+    3. 如果参考资料中没有相关信息，请明确回复"抱歉，在当前知识库中未找到相关信息"，不要编造。
+    4. 回答使用中文，语言简洁专业。
+    
+    <参考资料>
+    {context}
